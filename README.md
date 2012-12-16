@@ -1,0 +1,4 @@
+cssSprites
+==========
+
+cssSprites generator
