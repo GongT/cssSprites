@@ -21,6 +21,7 @@ class MainWindow : public QMainWindow
 	void OpenFile(const QString& file);
 	void SaveFile(const QString& file);
 	void ExportCss(const QString& file);
+	QString ExportCss();
 	
 	public slots:
 	void onMenuClicked(QAction*);

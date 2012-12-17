@@ -26,6 +26,7 @@ SOURCES += \
 	Dialog/dlgproperty.cpp\
 	Dialog/mainwindow.cpp\
 	Dialog/mainwindow_actions.cpp\
+	Dialog/dlgtextwindow.cpp\
 	Object/imageframe.cpp 
 
 HEADERS += \
@@ -35,6 +36,7 @@ HEADERS += \
 	WndCtl/windowmananger.h\
 	Dialog/mainwindow.h\
 	Dialog/dlgproperty.h\
+	Dialog/dlgtextwindow.h\
 	Object/imageframe.h
 
 INCLUDEPATH += main WndCtl Dialog Object

@@ -256,8 +256,10 @@
     <addaction name="btnPropertyWindow"/>
     <addaction name="separator"/>
     <addaction name="btnExportPNG"/>
+    <addaction name="btnExportPNGSelf"/>
     <addaction name="btnExportCSS"/>
-    <addaction name="btnExportSelf"/>
+    <addaction name="btnExportCSSSelf"/>
+    <addaction name="btnExportCSSShow"/>
    </widget>
    <widget class="QMenu" name="mnuObjects">
     <property name="title">
@@ -395,6 +397,9 @@
    <property name="text">
     <string>图像设定</string>
    </property>
+   <property name="shortcut">
+    <string>F2</string>
+   </property>
    <property name="menuRole">
     <enum>QAction::PreferencesRole</enum>
    </property>
@@ -431,13 +436,13 @@
     <string>导出独立CSS</string>
    </property>
    <property name="shortcut">
-    <string>Ctrl+E</string>
+    <string>Ctrl+Alt+E</string>
    </property>
    <property name="iconVisibleInMenu">
     <bool>true</bool>
    </property>
    <property name="action" stdset="0">
-    <number>202</number>
+    <number>204</number>
    </property>
   </action>
   <action name="btnExportPNG">
@@ -458,7 +463,7 @@
     <number>201</number>
    </property>
   </action>
-  <action name="btnExportSelf">
+  <action name="btnExportCSSSelf">
    <property name="icon">
     <iconset theme="text-css">
      <normaloff/>
@@ -468,13 +473,53 @@
     <string>导出CSS到当前文件</string>
    </property>
    <property name="shortcut">
-    <string>Ctrl+Alt+S</string>
+    <string>Ctrl+E</string>
    </property>
    <property name="iconVisibleInMenu">
     <bool>true</bool>
    </property>
    <property name="action" stdset="0">
     <number>203</number>
+   </property>
+  </action>
+  <action name="btnExportCSSShow">
+   <property name="icon">
+    <iconset theme="text-css">
+     <normaloff/>
+    </iconset>
+   </property>
+   <property name="text">
+    <string>导出CSS并显示</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Alt+S</string>
+   </property>
+   <property name="iconVisibleInMenu">
+    <bool>true</bool>
+   </property>
+   <property name="action" stdset="0">
+    <number>205</number>
+   </property>
+  </action>
+  <action name="btnExportPNGSelf">
+   <property name="icon">
+    <iconset theme="image-x-generic" resource="../Resources/res.qrc">
+     <normaloff>:/new-image.png</normaloff>:/new-image.png</iconset>
+   </property>
+   <property name="text">
+    <string>导出PNG到上次目标</string>
+   </property>
+   <property name="toolTip">
+    <string>导出PNG到上次目标</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Alt+P</string>
+   </property>
+   <property name="iconVisibleInMenu">
+    <bool>true</bool>
+   </property>
+   <property name="action" stdset="0">
+    <number>202</number>
    </property>
   </action>
  </widget>

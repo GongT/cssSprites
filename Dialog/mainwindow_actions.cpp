@@ -10,6 +10,7 @@
 #include "abstractwindow.h"
 #include "mainwindow.h"
 #include "dlgproperty.h"
+#include "dlgtextwindow.h"
 
 const QString StartIndent("/*@css/sprites");
 const QString EndIndent("@end sprites@*/");
@@ -57,27 +58,40 @@ void MainWindow::onMenuClicked(QAction* e){
 		CurrentSetting->show();
 		break;
 	case 201://导出PNG
-	{
-		QImage image = wm->Screenshot();
-		
-		QString savePath = QFileDialog::getSaveFileName(  this,UTF8("导出图片"),QString(),QString("*.png")   );
+	{	QString savePath = QFileDialog::getSaveFileName(  this,UTF8("导出图片"),QString(),QString("*.png")   );
 		if(savePath.length()){
-			qDebug()<<"SaveTo"<<savePath;
+			CurrentSetting->setProperty("lastpng",savePath);//记住上次导出位置
+			QImage image = wm->Screenshot();
 			image.save(savePath);
+			setStatusTip(UTF8("导出PNG图像：")+savePath);
 		}
-	}
-		break;
+	}	break;
+	case 202://导出PNG到上次的目标
+	{	QString savePath = CurrentSetting->property("lastpng").toString();
+		if( savePath.length() ){
+			QImage image = wm->Screenshot();
+			image.save(savePath);
+			setStatusTip(UTF8("导出到上次目标：")+savePath);
+		}else{
+			throw new AlertException("错误","没有上次记录，请点击导出图片");
+		}
+	}	break;
 	case 203://导出CSS到自身
 		if( CurrentFilePath.length() ){
 			ExportCss(CurrentFilePath);
 			break;
 		}
 		// NO break;
-	case 202://导出CSS
+	case 204://导出CSS
 	{	QString exportPath = QFileDialog::getSaveFileName(  this,UTF8("打开文件"),QString(),QString("*.css")   );
 		if(exportPath.length()){
 			ExportCss(exportPath);
 		}
+	}	break;
+	case 205://导出CSS并显示
+	{	static dlgTextWindow txtwnd(0);
+		txtwnd.setText(ExportCss());
+		txtwnd.show();
 	}	break;
 	case 300://打开右边栏
 	{	static bool isShow = false;
@@ -99,6 +113,7 @@ void MainWindow::onMenuClicked(QAction* e){
 }
 
 void MainWindow::OpenFile(const QString& file){
+	setStatusTip(UTF8("打开文件：")+file);
 	bool test_ok = false;
 	
 	QFile fp(file);
@@ -170,6 +185,7 @@ void MainWindow::OpenFile(const QString& file){
 }
 
 void MainWindow::SaveFile(const QString& file){
+	setStatusTip(UTF8("保存当前进度到：")+file);
 	QFile fp(file);
 	fp.open(QFile::ReadOnly);
 	QTextStream CurrentFile(&fp);
@@ -188,6 +204,7 @@ void MainWindow::SaveFile(const QString& file){
 	SaveingFile<<"\tNAMESPACE: "<<singleLine( CurrentSetting->property("namespace").toString() )<<endl;
 	SaveingFile<<"\tBGSELECTOR: "<<singleLine( CurrentSetting->property("bgselector").toString() )<<endl;
 	SaveingFile<<"\tGENERATEBGIMAGE: "<<singleLine( CurrentSetting->property("generatebgimage").toString() )<<endl;
+	SaveingFile<<"\tLASTPNG: "<<singleLine( CurrentSetting->property("lastpng").toString() )<<endl;
 	SaveingFile<<"[END]"<<endl;
 	SaveingFile <<endl;
 	
@@ -221,52 +238,32 @@ void MainWindow::SaveFile(const QString& file){
 	CurrentFile<<OData;
 	fp.close();
 	
-	//转移文件
 	QDir fsd;
 	QString target = fsd.absoluteFilePath(CurrentFilePath);
 	target += STUFF_FOLDER;
-	fsd.setPath(target);
-	if( !fsd.exists() ){
-		if(! fsd.mkdir(target) ) throw AlertException(UTF8("保存错误"),("目标路径无法写入（请检查权限）\n")+target);
+	if(fsd.currentPath() != target){
+		//转移文件
+		fsd.setPath(target);
+		if( !fsd.exists() ){
+			if(! fsd.mkdir(target) ) throw AlertException(UTF8("保存错误"),("目标路径无法写入（请检查权限）\n")+target);
+		}
+		QStringList stuff = QDir::current().entryList(QDir::Files);
+		QString fName;
+		foreach(fName,stuff){
+			qWarning(QString("Copy File ================\n\t\tfrom %1(%2)\n\t\t to %3").arg(fName).arg(QDir::currentPath()).arg(target+fName).toStdString().data());
+			QFile::copy(fName,target+fName);
+		}
+		//移动当前目录
+		fsd.setCurrent(target);
 	}
-	QStringList stuff = QDir::current().entryList(QDir::Files);
-	QString fName;
-	foreach(fName,stuff){
-		qWarning(QString("Move File ================\n\t\tfrom %1(%2)\n\t\t to %3").arg(fName).arg(QDir::currentPath()).arg(target+fName).toStdString().data());
-		QFile::copy(fName,target+fName);
-		//QFile::remove(fName);
-	}
-	//移动当前目录
-	fsd.setCurrent(target);
+	
 	qDebug()<<"[SAVE FILE]Current dir is "<<QDir::currentPath();
 }
 
-void MainWindow::ExportCss(const QString& file){
-	QFile fp(file);
-	fp.open(QFile::ReadOnly);
-	QTextStream CurrentFile(&fp);
-	
-	QString OData;//存放导出文件内容
-	QTextStream SaveingFile(&OData);
-	SaveingFile.setCodec("UTF-8");
-	SaveingFile<<CharsetIndent<<"\"UTF-8\""<<endl;
-	
-	QString Line;
-	bool switcher = false;
-	while( !CurrentFile.atEnd() ){
-		Line = CurrentFile.readLine();
-		if( !switcher ){ //非 配置or导出 部分
-			if(Line.startsWith(AutoGenIndent)){
-				switcher = true;
-				continue;
-			}
-			if(Line.startsWith(CharsetIndent)) continue;//逃过字符集声明
-			SaveingFile<<Line<<endl;
-		}else{ //配置or导出 部分
-			switcher = !Line.startsWith(AutoGenEndIndent);
-		}
-	}
-	
+QString MainWindow::ExportCss(){
+	static QString ret_str;
+	ret_str.clear();
+	QTextStream SaveingFile(&ret_str);
 	SaveingFile<<endl<<AutoGenIndent<<endl;
 	//开始实际导出
 	QString Template( CurrentSetting->getTemplate() );
@@ -274,7 +271,7 @@ void MainWindow::ExportCss(const QString& file){
 	const QString URL(CurrentSetting->getURL() );
 	const QString BgStyle = QString("\n\tdisplay: block;\n\tbackground-repeat: no-repeat;\n\tbackground-image:url( %1 );\n").arg(URL);
 	if( CurrentSetting->getGenerateBgImage() ){
-		SaveingFile<<NS<<' '<<CurrentSetting->getBgSelector()<<UTF8("{//背景图")<<BgStyle<<"}\n\n";
+		SaveingFile<<UTF8("{/*背景图*/\n")<<NS<<' '<<CurrentSetting->getBgSelector()<<BgStyle<<"}\n\n";
 	}else{
 		Template = Template.insert(Template.lastIndexOf('}')-1,BgStyle);
 	}
@@ -302,6 +299,38 @@ void MainWindow::ExportCss(const QString& file){
 					  )<<endl;
 	}
 	SaveingFile<<endl<<AutoGenEndIndent<<endl;
+	
+	return ret_str;
+}
+
+void MainWindow::ExportCss(const QString& file){
+	setStatusTip(UTF8("导出CSS到：")+file);
+	QFile fp(file);
+	fp.open(QFile::ReadOnly);
+	QTextStream CurrentFile(&fp);
+	
+	QString OData;//存放导出文件内容
+	QTextStream SaveingFile(&OData);
+	SaveingFile.setCodec("UTF-8");
+	SaveingFile<<CharsetIndent<<"\"UTF-8\";"<<endl;
+	
+	QString Line;
+	bool switcher = false;
+	while( !CurrentFile.atEnd() ){
+		Line = CurrentFile.readLine();
+		if( !switcher ){ //非 配置or导出 部分
+			if(Line.startsWith(AutoGenIndent)){
+				switcher = true;
+				continue;
+			}
+			if(Line.startsWith(CharsetIndent)) continue;//逃过字符集声明
+			SaveingFile<<Line<<endl;
+		}else{ //配置or导出 部分
+			switcher = !Line.startsWith(AutoGenEndIndent);
+		}
+	}
+	
+	SaveingFile<<ExportCss();
 	
 	fp.close();
 	if(!fp.open(QFile::WriteOnly)) throw AlertException(UTF8("保存失败"),UTF8("无法写入文件"));

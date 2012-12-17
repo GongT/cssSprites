@@ -69,10 +69,10 @@
         </property>
         <property name="plainText">
          <string>/*[%t|%r] (%w,%h)+(%x,%y) */
-%ns%i{
+%ns%i {
 	width: %wpx;
-	height:%hpx;
-	background-position:%xpx %ypx;
+	height: %hpx;
+	background-position: -%xpx -%ypx;
 }
 </string>
         </property>
