@@ -5,11 +5,12 @@
 #include <QPainter>
 #include <QMetaProperty>
 
-ImageFrame::ImageFrame(QWidget *parent) :
+ImageFrame::ImageFrame(QWidget *parent ) :
 	QWidget(parent),
 	mType("Image")
 {
 	img.load(":/new-image.png","PNG");
+	this->setProperty( "defaultSize", img.size() );
 	icon.addPixmap(QPixmap::fromImage(img));
 	this->setBackgroundRole(QPalette::Base);
 }

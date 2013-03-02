@@ -15,7 +15,8 @@ class WindowMananger : public QObject
 	int CurrentIndex(){return windows.indexOf(current);}
 	void setCurrentWindow(class AbstractWindow*);
 	
-	class AbstractWindow* getWindow(int index = -1){return windows.value(index);}
+	class AbstractWindow* getWindow(int index = -1){return windows.value(index,NULL);}
+	int windowCount()const {return windows.count() ;}
 	
 	class WindowInfo getWindowInfo(int = -1);
 	
@@ -45,7 +46,7 @@ class WindowMananger : public QObject
 	private slots:
 	void onWindowClicked(class AbstractWindow*);
 	void onWindowChanged(class AbstractWindow*);
-	void onWindowSelected(class AbstractWindow*);
+	void onWindowSelected(class AbstractWindow*, bool);
 	void onWindowClosed(class AbstractWindow*);
 	
 	private:

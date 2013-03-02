@@ -26,6 +26,9 @@ MainWindow::MainWindow(QWidget *parent) :
 	ui->frmMain->setBackgroundRole(QPalette::Base);
 	ui->scrollArea->setBackgroundRole(QPalette::Dark);
 	
+	ui->frmProperty->setCurrentIndex(0);
+	ui->tabProperty->setEnabled(false);
+	
 #define CONNECT(NAME) this->connect(CurrentSetting,SIGNAL(NAME) ,SLOT(on##NAME) )
 	CONNECT( ScreenHeightChange(int) );
 	CONNECT( ScreenWidthChange(int) );
@@ -44,6 +47,8 @@ MainWindow::~MainWindow()
 }
 
 void MainWindow::ChangeInput(const AbstractWindow*const ptr){
+	ui->tabProperty->setEnabled(true);
+	
 	ui->txtData->setText(ptr->getData());
 	ui->txtID->setText(ptr->getID());
 	ui->txtName->setText(ptr->getName());
@@ -64,28 +69,28 @@ void MainWindow::WndCreate(int index){
 	btn->setText(wnd_ptr->getTitle());
 	btn->setIcon(icon);
 	btn->setCheckable(true);
-	btn->setIconVisibleInMenu(true);	
+	btn->setIconVisibleInMenu(true);
 	ui->mnuObjects->addAction(btn);
 	
 	//添加列表项目
 	QListWidgetItem* new_item = new QListWidgetItem(wnd_ptr->getTitle());
 	new_item->setIcon(icon);
 	ui->lstObjects->addItem(new_item);
-	
 }
 
 void MainWindow::WndChange(int index){
 	AbstractWindow* wnd_ptr = wm->getWindow(index);
+	
 	//文本框
 	ChangeInput(wnd_ptr);
 	QIcon icon = wnd_ptr->getIcon();
 	QString title = wnd_ptr->getTitle();
-	
+
 	//列表
 	QListWidgetItem*row = ui->lstObjects->item(index);
 	row->setIcon(icon);
 	row->setText(title);
-	
+
 	//菜单
 	QAction* btn = ui->mnuObjects->actions().value(index+2);
 	btn->setIcon(icon);
@@ -96,6 +101,8 @@ void MainWindow::WndClose(int index){
 	qDebug()<<"MainWindow::WndClose Cleanup: "<<index;
 	delete ui->mnuObjects->actions().value(index+2);
 	delete ui->lstObjects->takeItem(index);
+	
+	ui->tabProperty->setEnabled(false);
 }
 
 void MainWindow::WndSelect(int index){
@@ -104,7 +111,7 @@ void MainWindow::WndSelect(int index){
 	btn = ui->mnuObjects->actions().value(index);
 	btn->setChecked(true);
 	ui->lstObjects->setCurrentRow(index);
-	
+
 	ChangeInput(wm->CurrentWindow());
 }
 
@@ -118,21 +125,6 @@ void MainWindow::changeEvent(QEvent *e)
 	default:
 		break;
 	}
-}
-
-void MainWindow::on_btnOk_pressed(){
-	AbstractWindow* wnd_ptr = wm->CurrentWindow();
-	wnd_ptr->blockSignals(true);
-	wnd_ptr->setData(ui->txtData->text());
-	wnd_ptr->setID(ui->txtID->text());
-	wnd_ptr->setName(ui->txtName->text());
-	wnd_ptr->setRect( QRect( ui->txtLeft->value(),ui->txtTop->value() ,
-						 ui->txtWidth->value(),ui->txtHeight->value() ));
-	wnd_ptr->blockSignals(false);
-}
-
-void MainWindow::on_btnClose_pressed(){
-    wm->CloseWindow();
 }
 
 void MainWindow::closeEvent(QCloseEvent *e){

@@ -4,7 +4,9 @@
 #
 #-------------------------------------------------
 
-QT       += core gui
+QT       += core
+QT       += gui
+QT       += widgets
 
 TARGET = cssSprites
 TEMPLATE = app
@@ -27,7 +29,7 @@ SOURCES += \
 	Dialog/mainwindow.cpp\
 	Dialog/mainwindow_actions.cpp\
 	Dialog/dlgtextwindow.cpp\
-	Object/imageframe.cpp 
+	Object/imageframe.cpp
 
 HEADERS += \
 	main/alertexception.h\

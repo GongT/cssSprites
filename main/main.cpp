@@ -34,6 +34,10 @@ int main(int argc, char *argv[])
 	w = new MainWindow;
 	w->show();
 	
+	
+	w->OpenFile( "/tmp/x/x.css" );
+	return a.exec();
+	
 	QString cwd;
 	//命令行打开文件
 	if(argc > 1){
@@ -51,7 +55,6 @@ int main(int argc, char *argv[])
 		}
 		qDebug()<<"CHDIR "<<QDir::setCurrent(cwd);
 	}
-	
 	
 	return a.exec();
 }

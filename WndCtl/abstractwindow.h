@@ -17,7 +17,9 @@ class AbstractWindow : public QWidget
 	Q_PROPERTY(QRect rect READ getRect WRITE setRect NOTIFY onRectChange STORED false)
 	Q_PROPERTY(QSize size READ getSize WRITE setSize NOTIFY onRectChange STORED false)
 	Q_PROPERTY(QPoint pos READ getPos WRITE setPos NOTIFY onRectChange STORED false)
-	
+
+	Q_PROPERTY(QSize defaultSize READ getDefaultSize STORED false)
+
 	public:
 	//getter
 	inline QString getType()const{return mContent->property("type").toString();}
@@ -29,6 +31,11 @@ class AbstractWindow : public QWidget
 	inline QRect getRect()const{return getContentRect();}
 	inline QSize getSize()const{return getContentRect().size();}
 	inline QPoint getPos()const{return getContentRect().topLeft();}
+	inline QSize getDefaultSize()const
+	{
+		return mContent->property("defaultSize").toSize();
+	}
+
 	//setter
 	inline void setID(const QString&data){if(mID==data)return;mID=data;emit onIDChange(this);}
 	inline void setName(const QString&data){if(mName==data)return;mName=data;emit onNameChange(this);}
@@ -36,24 +43,24 @@ class AbstractWindow : public QWidget
 	inline void setRect(const QRect&data){setSize(data.size());setPos(data.topLeft());}
 	inline void setSize(const QSize&data){ResizeAbsolute(data);}
 	inline void setPos(const QPoint&data){MoveAbsolute(data);}
-	
+
 	private: //property
 	QString mID;
 	QString mName;
 	//属性定义结束
-	
-    public:
+
+	public:
 		AbstractWindow(QWidget *screen,QWidget *content);
-        virtual ~AbstractWindow() {}
-		
+		virtual ~AbstractWindow() {}
+
 		/* Window Info */
 		void ChangeInfo(const QString*,const QString*,const QString*,const QRect*);
-		
+
 		/* 内容元件 */
 		QWidget* Content()const;
 		QWidget* setContent(QWidget*);
 		QRect getContentRect()const;
-		
+
 		public slots:
 		/* 绘图 */
 		void Draw(QPaintDevice *dev);
@@ -62,25 +69,25 @@ class AbstractWindow : public QWidget
 		void focusOutEvent(QFocusEvent *);
 		void setFocus(bool);
 		inline bool isFocus(){return mFocus;}
-		
-		
-		
+
+
+
 	public slots:
 		void MenuRequested();
-		
+
 	signals:
 		void onOpen(AbstractWindow*);
 		void onClose(AbstractWindow*);
-		void onFocus(AbstractWindow*);
+		void onFocus(AbstractWindow*,bool focus = true);
 		void onClicked(AbstractWindow*);
-		
+
 		void onIDChange(AbstractWindow*);
 		void onNameChange(AbstractWindow*);
 		void onDataChange(AbstractWindow*);
 		void onRectChange(AbstractWindow*);
 		void onIconChange(AbstractWindow*);
 		void onBorderChange(AbstractWindow*);
-		
+
 	protected:
 		void paintEvent(QPaintEvent *);
 		void mouseMoveEvent(QMouseEvent *);
@@ -89,14 +96,14 @@ class AbstractWindow : public QWidget
 		void resizeEvent(QResizeEvent *);
 		void moveEvent(QMoveEvent *);
 		void closeEvent(QCloseEvent *);
-		
+
 	private:
 		bool mFocus; //是否拥有焦点，用来决定是否绘制边框
 		const QWidget*const mScreen; //窗口所在“屏幕”
 		QWidget* mContent; //窗口内容
 		QPoint TrackingPoint; //鼠标按下时的位置，用来计算位移
 		bool isMouseDown;
-		
+
 		enum TrackingType{
 			None = 0,
 			LeftTop,Top,RightTop,
@@ -105,7 +112,7 @@ class AbstractWindow : public QWidget
 		}Tracking;//鼠标按下时，记录当前追踪方式
 		void TestPosition(int x,int y);//测试鼠标处于哪个位置
 		void MoveDispatch(const QPoint &p); //根据当前追踪的方式分配形状变化
-		
+
 		/* 窗口大小、位置函数 */
 		void MoveRelative(const QPoint&);
 		void MoveRelative(const int& x , const int& y);
@@ -113,9 +120,9 @@ class AbstractWindow : public QWidget
 		void ResizeRelative(const QSize&);
 		void ResizeRelative(const int& w , const int& h);
 		void ResizeAbsolute(const QSize&);
-		
+
 		class QRect mTitleButton;//标题菜单按钮
-		
+
 	public:
 		inline long getBorderTop()const{return mBorderTop;}
 		inline long getBorderLeft()const{return mBorderLeft;}
@@ -127,7 +134,7 @@ class AbstractWindow : public QWidget
 		inline void setBorderLeft(int set){mBorderLeft = set;mContent->move(getBorderPos());emit onRectChange(this);}
 		inline void setBorderRight(int set){mBorderRight = set;mContent->resize(this->size() - getBorderSize());emit onRectChange(this);}
 		inline void setBorderBottom(int set){mBorderBottom = set;mContent->resize(this->size() - getBorderSize());emit onRectChange(this);}
-		
+
 	private:
 		/* 边框宽度 变量 设置获取函数 */
 		long mBorderTop;

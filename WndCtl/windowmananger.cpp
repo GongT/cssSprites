@@ -20,16 +20,16 @@ void WindowMananger::CreateWindow(QWidget *wnd , const QString*Name , const QStr
 	AbstractWindow *ptr = new AbstractWindow(this->screen(),wnd);
 	ptr->setName( Name? *Name : QString::fromUtf8("匿名元件"));
 	ptr->setID( Id? *Id : QString::fromUtf8("#Untitled"));
-	ptr->setData( Data? *Data : "" );
+	if(Data) ptr->setData( *Data );
 	if(Rect){
 		ptr->setRect(*Rect);
 	}else{
-		ptr->setPos(screen()->rect().topLeft()/2);
-		ptr->setSize(QSize(100, 100));
+		ptr->setPos(QPoint(0,0));
+		ptr->setSize(ptr->property("defaultSize").toSize());
 	}
 	ptr->show();
 	wnd->show();
-	
+
 	//this->connect(ptr,SIGNAL(onClicked(AbstractWindow*)) , SLOT(onWindowClicked(AbstractWindow*)));
 	this->connect(ptr,SIGNAL(onClose(AbstractWindow*)) , SLOT(onWindowClosed(AbstractWindow*)));
 	this->connect(ptr,SIGNAL(onDataChange(AbstractWindow*)) , SLOT(onWindowChanged(AbstractWindow*)));
@@ -37,11 +37,11 @@ void WindowMananger::CreateWindow(QWidget *wnd , const QString*Name , const QStr
 	this->connect(ptr,SIGNAL(onIDChange(AbstractWindow*)) , SLOT(onWindowChanged(AbstractWindow*)));
 	this->connect(ptr,SIGNAL(onRectChange(AbstractWindow*)) , SLOT(onWindowChanged(AbstractWindow*)));
 	this->connect(ptr,SIGNAL(onIconChange(AbstractWindow*)) , SLOT(onWindowChanged(AbstractWindow*)));
-	
-	this->connect(ptr,SIGNAL(onFocus(AbstractWindow*)) , SLOT(onWindowSelected(AbstractWindow*)));
-	
+
+	this->connect(ptr,SIGNAL(onFocus(AbstractWindow*,bool)) , SLOT(onWindowSelected(AbstractWindow*,bool)));
+
 	qDebug()<<"CreateWindow : "<<wnd<<','<<wnd->property("name")<<','<<wnd->property("id")<<','<<wnd->property("data")<<','<<wnd->property("rect");
-	
+
 	windows.push_back(ptr);
 	WindowCreate(windows.length()-1);
 	setCurrentWindow(ptr);
@@ -58,12 +58,6 @@ void WindowMananger::CloseWindow(int index){
 	current = NULL;
 	if(!wnd) return;
 	wnd->close();
-}
-
-void WindowMananger::setCurrentWindow(int index){
-	if( index != CurrentIndex() && index >= 0 && index < windows.size()){
-		setCurrentWindow(windows.at(index));
-	}
 }
 
 void WindowMananger::onWindowClicked(AbstractWindow*wnd){
@@ -85,13 +79,28 @@ void WindowMananger::onWindowClosed(AbstractWindow*wnd){
 	}
 }
 
-void WindowMananger::onWindowSelected(AbstractWindow*wnd){
-	if(wnd == current) return;
-	if(current){
-		current->setFocus(false);
+void WindowMananger::onWindowSelected(AbstractWindow*wnd,bool val){
+	if(val){
+		if(wnd == current) return;
+		if(current){
+			current->setFocus(false);
+		}
+		current = wnd;
+		WindowSelect(CurrentIndex());
+	}else{
+		// no action now 
 	}
-	current = wnd;
-	WindowSelect(CurrentIndex());
+}
+
+void WindowMananger::setCurrentWindow(int index){
+	if( index != CurrentIndex() && index>=-1 && index < windows.size()){
+		if(index==-1){
+			AbstractWindow* nil = NULL;
+			setCurrentWindow(nil);
+		}else{
+			setCurrentWindow(windows.at(index));
+		}
+	}
 }
 
 void WindowMananger::setCurrentWindow(AbstractWindow* wnd){
@@ -100,8 +109,10 @@ void WindowMananger::setCurrentWindow(AbstractWindow* wnd){
 		current->setFocus(false);
 	}
 	current = wnd;
-	wnd->setFocus(true);
-	WindowSelect(CurrentIndex());
+	if(wnd){
+		wnd->setFocus(true);
+		WindowSelect(CurrentIndex());
+	}
 }
 
 QImage WindowMananger::Screenshot(){
@@ -109,7 +120,7 @@ QImage WindowMananger::Screenshot(){
 	exportImage.fill(QColor(0,0,0,0));   // fill transparent
 	QPainter p;
 	p.begin(&exportImage);
-	
+
 	for( int i=0 ; i<windows.length() ; i++ ){
 		windows.at(i)->Draw(&exportImage);
 	}
@@ -141,7 +152,7 @@ QString WindowMananger::SessionSave(){
 void WindowMananger::SessionResume(QString& data){
 	QTextStream txt(&data);
 	int start = false;
-	
+
 	struct ObjDef{
 		QString type;
 		QString id;
@@ -149,7 +160,7 @@ void WindowMananger::SessionResume(QString& data){
 		QString data;
 		QString rect;
 	}obj;
-	
+
 	while(!txt.atEnd()){
 		QString Line = txt.readLine();
 		if( !start && Line == "[BEGIN]" ){
@@ -162,7 +173,7 @@ void WindowMananger::SessionResume(QString& data){
 			QWidget* wnd = static_cast<QWidget*>(CreateObject(obj.type));
 			if(!wnd) throw AlertException("程序错误","无法实例化Area");
 			CreateWindow(wnd , &obj.name , &obj.id , &obj.data , &rect_def);
-			
+
 			obj.type.clear();
 			obj.id.clear();
 			obj.name.clear();
@@ -171,10 +182,10 @@ void WindowMananger::SessionResume(QString& data){
 			continue;
 		}
 		if(!start) continue;
-		
+
 		Line = Line.trimmed();
 		QString ID = Line.section(' ',0,0);
-		
+
 		if(ID == "TYPE:"){
 			obj.type = Line.section(' ',1);
 		}else if(ID == "ID:"){

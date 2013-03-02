@@ -13,43 +13,45 @@ namespace Ui {
 class MainWindow : public QMainWindow
 {
 	Q_OBJECT
-	
+
 	public:
 	explicit MainWindow(QWidget *parent = 0);
 	~MainWindow();
-	
+
 	void OpenFile(const QString& file);
 	void SaveFile(const QString& file);
 	void ExportCss(const QString& file);
 	QString ExportCss();
-	
+
 	public slots:
 	void onMenuClicked(QAction*);
-	
+
 	protected:
 	void changeEvent(QEvent *e);
 	void closeEvent(QCloseEvent *e);
-	
+
 	private:
 	Ui::MainWindow *ui;
 	class WindowMananger* wm;
 	QString CurrentFilePath;
 //	class QStringList CurrentSettings;
 	void ChangeInput(const class AbstractWindow *const);
-	
+
 	private slots:
 	void setStatusTip(const QString&);
 	void WndCreate(int);
 	void WndChange(int);
 	void WndClose(int);
 	void WndSelect(int);
-	
-	void on_btnOk_pressed();
-	void on_btnClose_pressed();
-	
+
+	void on_btnOk_clicked();
+	void on_btnClose_clicked();
+	void on_btnRestoreSize_clicked();
+	void on_btnLayHorizontal_clicked();
+	void on_btnLayVertical_clicked();
+
 	void onScreenHeightChange(int h);
 	void onScreenWidthChange(int w);
-	
 	
 	protected:
 	class DlgProperty* CurrentSetting;

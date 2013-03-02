@@ -115,13 +115,13 @@ void MainWindow::onMenuClicked(QAction* e){
 void MainWindow::OpenFile(const QString& file){
 	setStatusTip(UTF8("打开文件：")+file);
 	bool test_ok = false;
-	
+
 	QFile fp(file);
 	test_ok = fp.exists();
 	if(!test_ok) throw AlertException(UTF8("打开失败"),UTF8("文件不存在:\n")+file);
 	test_ok = fp.open(QFile::ReadOnly);
 	if(!test_ok) throw AlertException(UTF8("打开失败"),UTF8("无法读取文件:\n")+file);
-	
+
 	QTextStream CurrentFile(&fp);
 	//读取文件中的配置
 	QString Line;
@@ -140,7 +140,7 @@ void MainWindow::OpenFile(const QString& file){
 			ProjectData<<Line<<endl;
 		}
 	}
-	
+
 	bool start = false;
 	while(!ProjectData.atEnd()){
 		QString Line = ProjectData.readLine();
@@ -153,21 +153,21 @@ void MainWindow::OpenFile(const QString& file){
 			continue;
 		}
 		if(!start) continue;
-		
+
 		Line = Line.trimmed();
 		QString ID = Line.section(' ',0,0).toLower();
 		ID.truncate(ID.length()-1);
 		QString Value = multiLine( Line.section(' ',1) );
-		
+
 		CurrentSetting->setProperty(ID.toStdString().data(),Value);
-		
+
 	}
-	
+
 	if(!test_ok) throw AlertException(UTF8("打开失败"),UTF8("无法在文件中识别本程序的格式"));
-	
+
 	ProjectData.reset();
 	wm->restart();
-	
+
 	//移动当前目录
 	QString stuff_dir = file + STUFF_FOLDER;
 	QDir stuff(stuff_dir);
@@ -175,11 +175,11 @@ void MainWindow::OpenFile(const QString& file){
 		stuff.mkdir(stuff_dir);
 	}
 	stuff.setCurrent(stuff_dir);
-	
+
 	qDebug()<<"[OPEN FILE]Current dir is "<<QDir::currentPath();
-	
+
 	wm->SessionResume(OData);
-	
+
 	CurrentFilePath = file;
 	this->setWindowTitle(file+QString(" - cssSprites"));
 }
@@ -192,9 +192,9 @@ void MainWindow::SaveFile(const QString& file){
 	QString OData;
 	QTextStream SaveingFile(&OData);
 	SaveingFile.setCodec("UTF-8");
-	
+
 	SaveingFile << StartIndent <<endl;
-	
+
 	SaveingFile <<endl;
 	SaveingFile<< "[GLOBAL]" <<endl;
 	SaveingFile<<"\tSCREENHEIGHT: "<<singleLine( CurrentSetting->property("screenheight").toString() )<<endl;
@@ -207,10 +207,10 @@ void MainWindow::SaveFile(const QString& file){
 	SaveingFile<<"\tLASTPNG: "<<singleLine( CurrentSetting->property("lastpng").toString() )<<endl;
 	SaveingFile<<"[END]"<<endl;
 	SaveingFile <<endl;
-	
+
 	SaveingFile << wm->SessionSave();
 	SaveingFile << endl << EndIndent <<endl;
-	
+
 	//读取文件中的其他部分
 	QString Line;
 	bool switcher = false;
@@ -226,18 +226,18 @@ void MainWindow::SaveFile(const QString& file){
 			switcher = !(Line.startsWith(EndIndent) || Line.startsWith(AutoGenEndIndent));
 		}
 	}
-	
+
 	fp.close();
 	if(!fp.open(QFile::WriteOnly)) throw AlertException(UTF8("保存失败"),UTF8("无法写入文件"));
 	CurrentFile.reset();
-	
+
 	CurrentFilePath = file;
 	this->setWindowTitle(file+QString(" - cssSprites"));
-	
+
 	qDebug()<<"File Save"<<file;
 	CurrentFile<<OData;
 	fp.close();
-	
+
 	QDir fsd;
 	QString target = fsd.absoluteFilePath(CurrentFilePath);
 	target += STUFF_FOLDER;
@@ -256,7 +256,7 @@ void MainWindow::SaveFile(const QString& file){
 		//移动当前目录
 		fsd.setCurrent(target);
 	}
-	
+
 	qDebug()<<"[SAVE FILE]Current dir is "<<QDir::currentPath();
 }
 
@@ -270,9 +270,7 @@ QString MainWindow::ExportCss(){
 	const QString NS(CurrentSetting->getNameSpace() );
 	const QString URL(CurrentSetting->getURL() );
 	const QString BgStyle = QString("\n\tdisplay: block;\n\tbackground-repeat: no-repeat;\n\tbackground-image:url( %1 );\n").arg(URL);
-	if( CurrentSetting->getGenerateBgImage() ){
-		SaveingFile<<UTF8("{/*背景图*/\n")<<NS<<' '<<CurrentSetting->getBgSelector()<<BgStyle<<"}\n\n";
-	}else{
+	if( !CurrentSetting->getGenerateBgImage() ){
 		Template = Template.insert(Template.lastIndexOf('}')-1,BgStyle);
 	}
 	Template.replace("%ns",NS+' ');
@@ -298,8 +296,13 @@ QString MainWindow::ExportCss(){
 					  .arg(temp.height())
 					  )<<endl;
 	}
+
+	if( CurrentSetting->getGenerateBgImage() ){
+		SaveingFile<<NS<<' '<<CurrentSetting->getBgSelector()<<UTF8("{\n")<<BgStyle<<"}\n\n";
+	}
+
 	SaveingFile<<endl<<AutoGenEndIndent<<endl;
-	
+
 	return ret_str;
 }
 
@@ -308,12 +311,12 @@ void MainWindow::ExportCss(const QString& file){
 	QFile fp(file);
 	fp.open(QFile::ReadOnly);
 	QTextStream CurrentFile(&fp);
-	
+
 	QString OData;//存放导出文件内容
 	QTextStream SaveingFile(&OData);
 	SaveingFile.setCodec("UTF-8");
 	SaveingFile<<CharsetIndent<<"\"UTF-8\";"<<endl;
-	
+
 	QString Line;
 	bool switcher = false;
 	while( !CurrentFile.atEnd() ){
@@ -329,13 +332,13 @@ void MainWindow::ExportCss(const QString& file){
 			switcher = !Line.startsWith(AutoGenEndIndent);
 		}
 	}
-	
+
 	SaveingFile<<ExportCss();
-	
+
 	fp.close();
 	if(!fp.open(QFile::WriteOnly)) throw AlertException(UTF8("保存失败"),UTF8("无法写入文件"));
 	CurrentFile.reset();
-	
+
 	CurrentFile<<OData;
 	fp.close();
 }
@@ -346,7 +349,7 @@ void MainWindow::dragEnterEvent(QDragEnterEvent *e){
 		e->acceptProposedAction();
 	}else if( mime->hasUrls() ){
 		e->acceptProposedAction();
-		
+
 	}else{
 		e->ignore();
 	}
@@ -368,9 +371,9 @@ void MainWindow::dropEvent(QDropEvent *e){
 		}
 		QUrl url;
 		QString error;
+		QImage temp;
 		for( int i=0 ; i<urls.length() ; i++ ){
 			url  = urls.at(i);
-			QImage temp;
 			if(url.isLocalFile() && temp.load(url.toLocalFile())){
 				QWidget* nWin = static_cast<QWidget*>(CreateObject("Image"));
 				nWin->setProperty("data", url.toLocalFile() );
@@ -386,6 +389,56 @@ void MainWindow::dropEvent(QDropEvent *e){
 		e->acceptProposedAction();
 	}else{
 		e->ignore();
+	}
+}
+
+
+void MainWindow::on_btnOk_clicked(){
+	AbstractWindow* wnd_ptr = wm->CurrentWindow();
+	wnd_ptr->blockSignals(true);
+	wnd_ptr->setData(ui->txtData->text());
+	wnd_ptr->setID(ui->txtID->text());
+	wnd_ptr->setName(ui->txtName->text());
+	wnd_ptr->setRect( QRect( ui->txtLeft->value(),ui->txtTop->value() ,
+						 ui->txtWidth->value(),ui->txtHeight->value() ));
+	wnd_ptr->blockSignals(false);
+}
+
+void MainWindow::on_btnClose_clicked(){
+	wm->CloseWindow();
+}
+
+void MainWindow::on_btnRestoreSize_clicked(){
+	AbstractWindow* win = wm->CurrentWindow();
+	const QVariant def = win->property("defaultSize");
+	
+	qDebug()<<"Restore default..."<<def;
+	if( def.isValid() ){
+		win->setSize(def.toSize());
+	}
+	
+	ChangeInput(win);
+}
+
+void MainWindow::on_btnLayHorizontal_clicked(){
+	int index = 0;
+	AbstractWindow* wnd = NULL;
+	int current = 0;
+	int hDelta = ui->txtDeltaHorizontal->value();
+	while( (wnd = wm->getWindow(index++)) ){
+		wnd->setProperty("pos", QPoint(current,0) );
+		current += wnd->getSize().width() + hDelta;
+	}
+}
+
+void MainWindow::on_btnLayVertical_clicked(){
+	int index = 0;
+	AbstractWindow* wnd = NULL;
+	int current = 0;
+	int vDelta = ui->txtDeltaVertical->value();
+	while( (wnd = wm->getWindow(index++)) ){
+		wnd->setProperty("pos", QPoint(0,current) );
+		current += wnd->getSize().height() + vDelta;
 	}
 }
 

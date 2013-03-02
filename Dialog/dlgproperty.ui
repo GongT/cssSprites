@@ -20,7 +20,7 @@
    <property name="bottomMargin">
     <number>5</number>
    </property>
-   <item row="3" column="1">
+   <item row="8" column="1">
     <widget class="QLineEdit" name="txtNameSpace">
      <property name="autoFillBackground">
       <bool>true</bool>
@@ -30,14 +30,14 @@
      </property>
     </widget>
    </item>
-   <item row="3" column="3">
+   <item row="8" column="3">
     <widget class="QLineEdit" name="txtURL">
      <property name="autoFillBackground">
       <bool>true</bool>
      </property>
     </widget>
    </item>
-   <item row="4" column="0" colspan="2">
+   <item row="9" column="0" colspan="2">
     <widget class="QCheckBox" name="chkGenerateBgImage">
      <property name="autoFillBackground">
       <bool>true</bool>
@@ -50,7 +50,7 @@
      </property>
     </widget>
    </item>
-   <item row="5" column="0" colspan="4">
+   <item row="10" column="0" colspan="4">
     <widget class="QGroupBox" name="grpMain">
      <property name="title">
       <string>元素CSS模板</string>
@@ -59,7 +59,16 @@
       <property name="spacing">
        <number>0</number>
       </property>
-      <property name="margin">
+      <property name="leftMargin">
+       <number>0</number>
+      </property>
+      <property name="topMargin">
+       <number>0</number>
+      </property>
+      <property name="rightMargin">
+       <number>0</number>
+      </property>
+      <property name="bottomMargin">
        <number>0</number>
       </property>
       <item>
@@ -105,44 +114,41 @@
      </layout>
     </widget>
    </item>
-   <item row="4" column="2">
+   <item row="9" column="2">
     <widget class="QLabel" name="lblShow3">
      <property name="text">
       <string>背景图片选择器</string>
      </property>
     </widget>
    </item>
-   <item row="3" column="0">
-    <widget class="QLabel" name="lblShow1">
-     <property name="text">
-      <string>命名空间</string>
-     </property>
-    </widget>
-   </item>
-   <item row="3" column="2">
+   <item row="8" column="2">
     <widget class="QLabel" name="lblShow2">
      <property name="text">
       <string>图片url</string>
      </property>
     </widget>
    </item>
-   <item row="4" column="3">
+   <item row="8" column="0">
+    <widget class="QLabel" name="lblShow1">
+     <property name="text">
+      <string>命名空间</string>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="2">
+    <widget class="QLabel" name="lblShow6">
+     <property name="text">
+      <string>图像高度</string>
+     </property>
+    </widget>
+   </item>
+   <item row="9" column="3">
     <widget class="QLineEdit" name="txtBgSelector">
      <property name="autoFillBackground">
       <bool>true</bool>
      </property>
      <property name="text">
       <string>.image</string>
-     </property>
-    </widget>
-   </item>
-   <item row="6" column="0" colspan="4">
-    <widget class="QDialogButtonBox" name="btnsMain">
-     <property name="orientation">
-      <enum>Qt::Horizontal</enum>
-     </property>
-     <property name="standardButtons">
-      <set>QDialogButtonBox::Apply|QDialogButtonBox::Close|QDialogButtonBox::Reset|QDialogButtonBox::RestoreDefaults</set>
      </property>
     </widget>
    </item>
@@ -153,17 +159,20 @@
      </property>
     </widget>
    </item>
-   <item row="2" column="0" colspan="4">
-    <widget class="Line" name="line">
+   <item row="11" column="0" colspan="4">
+    <widget class="QDialogButtonBox" name="btnsMain">
      <property name="orientation">
       <enum>Qt::Horizontal</enum>
      </property>
+     <property name="standardButtons">
+      <set>QDialogButtonBox::Apply|QDialogButtonBox::Close|QDialogButtonBox::Reset|QDialogButtonBox::RestoreDefaults</set>
+     </property>
     </widget>
    </item>
-   <item row="1" column="2">
-    <widget class="QLabel" name="lblShow6">
-     <property name="text">
-      <string>图像高度</string>
+   <item row="7" column="0" colspan="4">
+    <widget class="Line" name="line">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
      </property>
     </widget>
    </item>
@@ -180,7 +189,23 @@
      </property>
     </widget>
    </item>
-   <item row="1" column="3">
+   <item row="3" column="3">
+    <widget class="QPushButton" name="btnCutSize">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="text">
+      <string>Not Implement</string>
+     </property>
+     <property name="icon">
+      <iconset theme="zoom-fit-best"/>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="3" colspan="2">
     <widget class="QSpinBox" name="txtHeight">
      <property name="minimum">
       <number>12</number>
@@ -190,6 +215,13 @@
      </property>
      <property name="value">
       <number>128</number>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="2">
+    <widget class="QLabel" name="label">
+     <property name="text">
+      <string>裁剪画布</string>
      </property>
     </widget>
    </item>

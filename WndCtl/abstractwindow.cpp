@@ -212,12 +212,12 @@ void AbstractWindow::setFocus(bool focus){
 		mContent->setCursor(Qt::SizeAllCursor);
 		this->setCursor(Qt::SizeAllCursor);
 		QWidget::setFocus(Qt::MouseFocusReason);
-		onFocus(this);
 	}else{
 		mContent->setCursor(Qt::ArrowCursor);
 		this->setCursor(Qt::ArrowCursor);
 		QWidget::clearFocus();
 	}
+	onFocus(this,focus);
 	this->repaint();
 }
 

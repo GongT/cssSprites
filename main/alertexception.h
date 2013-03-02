@@ -1,7 +1,7 @@
 #ifndef ALERTEXCEPTION_H
 #define ALERTEXCEPTION_H
 
-#include <QtConcurrentRun>
+#include <QtConcurrent/QtConcurrent>
 
 class AlertException : public QtConcurrent::Exception
 {
@@ -11,7 +11,7 @@ class AlertException : public QtConcurrent::Exception
 	~AlertException()throw(){}
 	void Alert()const;
 	const char* what() const throw();
-	
+
 	QString mMessage;
 	QString mTitle;
 };
