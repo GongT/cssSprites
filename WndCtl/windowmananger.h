@@ -39,7 +39,7 @@ class WindowMananger : public QObject
 	void WindowSelect(int);
 	
 	public slots:
-	void CreateWindow(QWidget *wnd , const QString*Name = NULL, const QString*Id = NULL , const QString*Data = NULL , const QRect*Rect = NULL);
+	void AddWindow(QWidget *wnd , const QString*Name = NULL, const QString*Id = NULL , const QString*Data = NULL , const QRect*Rect = NULL);
 	void CloseWindow(int index = -1);
 	void setCurrentWindow(int);
 	

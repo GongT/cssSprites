@@ -13,7 +13,7 @@ WindowMananger::WindowMananger(QObject *parent,QWidget *screen) :
 {
 }
 
-void WindowMananger::CreateWindow(QWidget *wnd , const QString*Name , const QString*Id , const QString*Data , const QRect*Rect  ){
+void WindowMananger::AddWindow(QWidget *wnd , const QString*Name , const QString*Id , const QString*Data , const QRect*Rect  ){
 	if(!wnd){
 		throw AlertException("窗口管理器错误","NULL wnd ptr in WindowMananger::CreateWindow");
 	}
@@ -172,7 +172,7 @@ void WindowMananger::SessionResume(QString& data){
 			QRect rect_def(UnSerializationRect(obj.rect));
 			QWidget* wnd = static_cast<QWidget*>(CreateObject(obj.type));
 			if(!wnd) throw AlertException("程序错误","无法实例化Area");
-			CreateWindow(wnd , &obj.name , &obj.id , &obj.data , &rect_def);
+			AddWindow(wnd , &obj.name , &obj.id , &obj.data , &rect_def);
 
 			obj.type.clear();
 			obj.id.clear();

@@ -47,12 +47,12 @@ void MainWindow::onMenuClicked(QAction* e){
 	case 100://添加图形
 	{	QWidget* wnd = static_cast<QWidget*>(CreateObject("Image"));
 		if(!wnd) throw AlertException("程序错误","无法实例化Image");
-		wm->CreateWindow(wnd);
+		wm->AddWindow(wnd);
 	}	break;
 	case 101://添加区域
 	{	QWidget* wnd = static_cast<QWidget*>(CreateObject("Area"));
 		if(!wnd) throw AlertException("程序错误","无法实例化Area");
-		wm->CreateWindow(wnd);
+		wm->AddWindow(wnd);
 	}	break;
 	case 200://图像设定
 		CurrentSetting->show();
@@ -360,7 +360,7 @@ void MainWindow::dropEvent(QDropEvent *e){
 	if( mime->hasImage() ){
 		QWidget* nWin = static_cast<QWidget*>(CreateObject("Image"));
 		nWin->setProperty("buffer", mime->imageData() );
-		wm->CreateWindow(nWin);
+		wm->AddWindow(nWin);
 		e->acceptProposedAction();
 	}else if( mime->hasUrls() ){
 		QList<QUrl> urls = mime->urls();
@@ -377,7 +377,7 @@ void MainWindow::dropEvent(QDropEvent *e){
 			if(url.isLocalFile() && temp.load(url.toLocalFile())){
 				QWidget* nWin = static_cast<QWidget*>(CreateObject("Image"));
 				nWin->setProperty("data", url.toLocalFile() );
-				wm->CreateWindow(nWin);
+				wm->AddWindow(nWin);
 			}else{
 				error += url.toString();
 				error += '\n';
