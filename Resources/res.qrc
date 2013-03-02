@@ -1,5 +1,14 @@
 <RCC>
     <qresource prefix="/">
         <file alias="new-image.png">image.png</file>
+        <file>align-horizontal-left.png</file>
+        <file>align-vertical-top.png</file>
+        <file>edit-delete.png</file>
+        <file>text-css.png</file>
+        <file>application-exit.png</file>
+        <file>document-open.png</file>
+        <file>document-save.png</file>
+        <file>document-save-as.png</file>
+        <file>insert-image.png</file>
     </qresource>
 </RCC>

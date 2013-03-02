@@ -81,18 +81,20 @@
         </item>
         <item>
          <layout class="QGridLayout" name="gridLayout">
+          <property name="topMargin">
+           <number>6</number>
+          </property>
           <item row="0" column="1">
            <widget class="QPushButton" name="btnLayVertical">
             <property name="statusTip">
              <string>垂直排列所有物件</string>
             </property>
             <property name="text">
-             <string>垂直</string>
+             <string/>
             </property>
             <property name="icon">
-             <iconset theme="align-horizontal-left">
-              <normaloff/>
-             </iconset>
+             <iconset theme="align-horizontal-left" resource="../Resources/res.qrc">
+              <normaloff>:/align-horizontal-left.png</normaloff>:/align-horizontal-left.png</iconset>
             </property>
            </widget>
           </item>
@@ -102,9 +104,8 @@
              <string>删除物件</string>
             </property>
             <property name="icon">
-             <iconset theme="edit-delete">
-              <normaloff/>
-             </iconset>
+             <iconset theme="edit-delete" resource="../Resources/res.qrc">
+              <normaloff>:/edit-delete.png</normaloff>:/edit-delete.png</iconset>
             </property>
            </widget>
           </item>
@@ -128,12 +129,11 @@
              <string>水平排列所有物件</string>
             </property>
             <property name="text">
-             <string>水平</string>
+             <string/>
             </property>
             <property name="icon">
-             <iconset theme="align-horizontal-top">
-              <normaloff/>
-             </iconset>
+             <iconset theme="align-horizontal-top" resource="../Resources/res.qrc">
+              <normaloff>:/align-vertical-top.png</normaloff>:/align-vertical-top.png</iconset>
             </property>
            </widget>
           </item>
@@ -373,11 +373,13 @@
   <widget class="QStatusBar" name="lblStatus"/>
   <action name="btnFileOpen">
    <property name="icon">
-    <iconset theme="document-open">
-     <normaloff/>
-    </iconset>
+    <iconset theme="document-open" resource="../Resources/res.qrc">
+     <normaloff>:/document-open.png</normaloff>:/document-open.png</iconset>
    </property>
    <property name="text">
+    <string>打开</string>
+   </property>
+   <property name="toolTip">
     <string>打开</string>
    </property>
    <property name="statusTip">
@@ -395,9 +397,8 @@
   </action>
   <action name="btnFileSave">
    <property name="icon">
-    <iconset theme="document-save">
-     <normaloff/>
-    </iconset>
+    <iconset theme="document-save" resource="../Resources/res.qrc">
+     <normaloff>:/document-save.png</normaloff>:/document-save.png</iconset>
    </property>
    <property name="text">
     <string>保存</string>
@@ -417,9 +418,8 @@
   </action>
   <action name="btnFileSaveAs">
    <property name="icon">
-    <iconset theme="document-save-as">
-     <normaloff/>
-    </iconset>
+    <iconset theme="document-save-as" resource="../Resources/res.qrc">
+     <normaloff>:/document-save-as.png</normaloff>:/document-save-as.png</iconset>
    </property>
    <property name="text">
     <string>另存为</string>
@@ -439,9 +439,8 @@
   </action>
   <action name="btnExit">
    <property name="icon">
-    <iconset theme="application-exit">
-     <normaloff/>
-    </iconset>
+    <iconset theme="application-exit" resource="../Resources/res.qrc">
+     <normaloff>:/application-exit.png</normaloff>:/application-exit.png</iconset>
    </property>
    <property name="text">
     <string>退出</string>
@@ -461,9 +460,8 @@
   </action>
   <action name="btnInsertImage">
    <property name="icon">
-    <iconset theme="insert-image">
-     <normaloff/>
-    </iconset>
+    <iconset theme="insert-image" resource="../Resources/res.qrc">
+     <normaloff>:/insert-image.png</normaloff>:/insert-image.png</iconset>
    </property>
    <property name="text">
     <string>图片</string>
