@@ -38,6 +38,7 @@ void MainWindow::onMenuClicked(QAction* e){
 	case 2://另存为
 	{	QString savePath = QFileDialog::getSaveFileName(  this,UTF8("打开文件"),QString(),QString("*.css")   );
 		if(savePath.length()){
+			if(!savePath.endsWith(QString(".css"))) savePath += QString(".css");
 			SaveFile(savePath);
 		}
 	}	break;
